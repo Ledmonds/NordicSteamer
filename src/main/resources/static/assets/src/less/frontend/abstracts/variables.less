@@ -1,0 +1,48 @@
+// Media Break Stylings
+@s: 720px;
+@m: 1920px;
+
+
+// Color Definitions
+@font-white: #fff;
+
+
+// Font Imports
+@font-face {
+    font-family: "Nordic Headings";
+    src: url('../fonts/NordicAlternativeRegular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: "Georgia", Georgia, serif;
+}
+
+
+// Font Sizes
+@font-p: 12px;
+@font-h1: 50px;
+@font-h2: 15px;
+@font-h3: 12px;
+
+
+//Font Mixins
+.headings-font-style () {
+    font-family: 'Nordic Headings';
+    font-size: @font-h1;
+    color: @font-white;
+}
+
+.paragraph-font-style() {
+    font-family: 'Georgia';
+    font-size: @font-p;
+    color: @font-white;
+}
+
+
+h1 {
+    .headings-font-style ();
+}
+
+p {
+    .paragraph-font-style ();
+}

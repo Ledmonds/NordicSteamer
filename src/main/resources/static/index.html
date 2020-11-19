@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!--Style Includes-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/frontend.min.css" type="text/css">
+
+    <!--Script Includes-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+
+    <title>OpenLayers example</title>
+</head>
+    <body>
+        <section class="map-section">
+            <div id="map" class="map"></div>
+            <script type="text/javascript">
+                var data = "";
+                var api = 'http://localhost:8080/api/v1/hotpool';
+                var tileMapSource = 'https://api.maptiler.com/maps/darkmatter/tiles.json?key=qBboKpkZdSvRE56e8ysr';
+                var mapInitZoomLevel = 6;
+                var mapInitCenterRegion = [-19, 65];
+
+                var source = new ol.source.TileJSON({
+                    url: tileMapSource,
+                    tileSize: 512,
+                    crossOrigin: 'anonymous'
+                });
+
+                var map = new ol.Map({
+                    target: 'map',
+                    layers: [
+                        new ol.layer.Tile({
+                            source: source
+                        })
+                    ],
+                    view: new ol.View({
+                        center: ol.proj.fromLonLat(mapInitCenterRegion),
+                        zoom: mapInitZoomLevel
+                    })
+                });
+
+                // Lazy lookup of the different HotPool locations and add to the map.
+                $.getJSON(api, function (data) {
+                    var hotPoolPoints = [];
+
+                    // Parse out the JSON node package and add it to the map.
+                    $.each(data, function(index, element) {
+                        var node = new ol.Feature({
+                            geometry: new ol.geom.Point(ol.proj.fromLonLat([element.gpsY, element.gpsX])),
+                            id: element.Id,
+                        })
+
+                        hotPoolPoints.push(node);
+                    });
+
+                    // Adding markers to the map.
+                    var layer = new ol.layer.Vector({
+                        source: new ol.source.Vector({
+                            features: hotPoolPoints
+                        })
+                    });
+
+                    map.addLayer(layer);
+                });
+            </script>
+        </section>
+    </body>
+</html>

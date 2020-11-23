@@ -2,67 +2,39 @@
 <html lang="en">
 <head>
     <!--Style Includes-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
     <link rel="stylesheet" href="/assets/css/frontend.min.css" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
 
     <!--Script Includes-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
 
-    <title>OpenLayers example</title>
+    <title>Nordic Steamer</title>
 </head>
     <body>
         <section class="map-section">
             <div id="map" class="map"></div>
-            <script type="text/javascript">
+            <script>
                 var data = "";
                 var api = 'http://localhost:8080/api/v1/hotpool';
-                var tileMapSource = 'https://api.maptiler.com/maps/darkmatter/tiles.json?key=qBboKpkZdSvRE56e8ysr';
+                var tileMapSource = 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png';
                 var mapInitZoomLevel = 6;
                 var mapInitCenterRegion = [-19, 65];
 
-                var source = new ol.source.TileJSON({
-                    url: tileMapSource,
-                    tileSize: 512,
-                    crossOrigin: 'anonymous'
+                var map = L.map('map').setView(mapInitCenterRegion, mapInitZoomLevel);
+
+                var Stadia_AlidadeSmoothDark = L.tileLayer(tileMapSource, {
+                    maxZoom: 20,
+                    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
                 });
 
-                var map = new ol.Map({
-                    target: 'map',
-                    layers: [
-                        new ol.layer.Tile({
-                            source: source
-                        })
-                    ],
-                    view: new ol.View({
-                        center: ol.proj.fromLonLat(mapInitCenterRegion),
-                        zoom: mapInitZoomLevel
-                    })
-                });
-
-                // Lazy lookup of the different HotPool locations and add to the map.
-                $.getJSON(api, function (data) {
-                    var hotPoolPoints = [];
-
-                    // Parse out the JSON node package and add it to the map.
-                    $.each(data, function(index, element) {
-                        var node = new ol.Feature({
-                            geometry: new ol.geom.Point(ol.proj.fromLonLat([element.gpsY, element.gpsX])),
-                            id: element.Id,
-                        })
-
-                        hotPoolPoints.push(node);
-                    });
-
-                    // Adding markers to the map.
-                    var layer = new ol.layer.Vector({
-                        source: new ol.source.Vector({
-                            features: hotPoolPoints
-                        })
-                    });
-
-                    map.addLayer(layer);
-                });
+                L.marker([51.5, -0.09]).addTo(map)
+                    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+                    .openPopup();
             </script>
         </section>
     </body>
